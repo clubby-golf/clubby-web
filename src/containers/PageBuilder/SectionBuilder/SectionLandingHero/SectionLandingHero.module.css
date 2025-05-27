@@ -1,0 +1,155 @@
+.heroSection {
+  position: relative;
+  height: 80vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.backgroundContainer {
+  position: absolute;
+  inset: 0;
+}
+
+.backgroundImage {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: all 1s ease-in-out;
+  opacity: 0;
+  transform: scale(1.05);
+}
+
+.backgroundImage.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.scrollingOverlay {
+  position: absolute;
+  inset: 0;
+}
+
+.scrollingGradient {
+  height: 120%;
+  width: 100%;
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.1), transparent);
+  animation: scrollUp 8s linear infinite;
+}
+
+.content {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  max-width: 1200px;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+.textContainer {
+  margin: 0 auto;
+  max-width: 64rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: bold;
+  letter-spacing: -0.025em;
+  color: white;
+  line-height: 1.1;
+}
+
+.titleGradient {
+  display: block;
+  background: linear-gradient(to right, #60a5fa, #a78bfa);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  margin: 0 auto;
+  max-width: 32rem;
+  font-size: 1.125rem;
+  color: #d1d5db;
+  line-height: 1.6;
+}
+
+.indicators {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 0;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.indicator {
+  height: 0.5rem;
+  width: 2rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.indicator:hover {
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.indicator.active {
+  background: white;
+}
+
+@keyframes scrollUp {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+/* Responsive Design */
+@media (min-width: 640px) {
+  .title {
+    font-size: 3.75rem;
+  }
+
+  .subtitle {
+    font-size: 1.25rem;
+  }
+
+  .buttonContainer {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  .title {
+    font-size: 4.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.5rem;
+  }
+}

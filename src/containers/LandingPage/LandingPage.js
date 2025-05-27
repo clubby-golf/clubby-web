@@ -11,19 +11,47 @@ import { propTypes } from '../../util/types';
 import FallbackPage from './FallbackPage';
 import { ASSET_NAME } from './LandingPage.duck';
 
+// your two custom sections
+import SectionLandingHero from '../PageBuilder/SectionBuilder/SectionLandingHero';
+import SectionLandingPopularBrands from '../PageBuilder/SectionBuilder/SectionLandingPopularBrands';
+
 const PageBuilder = loadable(() =>
   import(/* webpackChunkName: "PageBuilder" */ '../PageBuilder/PageBuilder')
 );
 
+const landingHeroType = SectionLandingHero.sectionType || 'landing-hero';
+const landingPopularBrandsType =
+  SectionLandingPopularBrands.sectionType || 'landing-popular-brands';
+
 export const LandingPageComponent = props => {
   const { pageAssetsData, inProgress, error } = props;
 
+  const pageData = pageAssetsData?.[camelize(ASSET_NAME)]?.data;
+
+  // inject both hero and popular‐brands at the very top
+  const customPageData = pageData
+    ? {
+        ...pageData,
+        sections: [
+          { sectionType: landingHeroType },
+          { sectionType: landingPopularBrandsType },
+          ...pageData.sections,
+        ],
+      }
+    : pageData;
+
   return (
     <PageBuilder
-      pageAssetsData={pageAssetsData?.[camelize(ASSET_NAME)]?.data}
+      pageAssetsData={customPageData}
       inProgress={inProgress}
       error={error}
       fallbackPage={<FallbackPage error={error} />}
+      options={{
+        sectionComponents: {
+          [landingHeroType]: { component: SectionLandingHero },
+          [landingPopularBrandsType]: { component: SectionLandingPopularBrands },
+        },
+      }}
     />
   );
 };
@@ -39,12 +67,5 @@ const mapStateToProps = state => {
   return { pageAssetsData, inProgress, error };
 };
 
-// Note: it is important that the withRouter HOC is **outside** the
-// connect HOC, otherwise React Router won't rerender any Route
-// components since connect implements a shouldComponentUpdate
-// lifecycle hook.
-//
-// See: https://github.com/ReactTraining/react-router/issues/4671
 const LandingPage = compose(connect(mapStateToProps))(LandingPageComponent);
-
 export default LandingPage;
