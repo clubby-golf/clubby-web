@@ -36,12 +36,16 @@
 
 /* Search */
 .searchLink {
-  min-width: 320px;
-  height: 100%;
-  border-left-style: solid;
-  border-left-width: 1px;
-  border-left-color: var(--colorGrey100);
-  margin-right: auto;
+    flex-grow: 1;
+    height: 100%;
+    background-color: rgb(245, 245, 245);
+    padding-left: 8px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(238, 238, 238);
+    border-image: initial;
+    border-radius: 10px;
+    margin: auto;
 }
 
 .spacer {
@@ -68,19 +72,14 @@
 
 .takeAvailableSpace {
   flex-grow: 1;
+  height: 50px;
 
   /* At 1024px, the translations might need more space than what searchLink otherwise gets. */
   min-width: 220px;
 }
 
 .topbarSearchWithLeftPadding {
-  padding-left: 24px;
-  padding-right: 24px;
-  height: var(--topbarHeightDesktop);
-
-  @media (--viewportLarge) {
-    padding-left: 34px;
-  }
+  height: 50px;
 }
 
 /* These is used with Inbox, Sign up, and Log in */
