@@ -52,6 +52,8 @@
   @media (--viewportMedium) {
     flex-direction: row;
     justify-content: center;
+    padding-top: calc( var(--topbarHeightDesktop) + 40px );
+    min-height: calc(100vh - (var(--topbarHeightDesktop) + 40px) );
   }
 }
 

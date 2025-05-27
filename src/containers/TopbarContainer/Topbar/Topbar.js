@@ -26,6 +26,8 @@ import TopbarMobileMenu from './TopbarMobileMenu/TopbarMobileMenu';
 import TopbarDesktop from './TopbarDesktop/TopbarDesktop';
 
 import css from './Topbar.module.css';
+import NavbarDesktop from '../Navbar/NavbarDesktop/NavbarDesktop';
+import { navbarLinks } from '../Navbar/NavbarDesktop/configNavbar';
 
 const MAX_MOBILE_SCREEN_WIDTH = 1024;
 
@@ -325,6 +327,9 @@ const TopbarComponent = props => {
           customLinks={customLinks}
           showSearchForm={showSearchForm}
         />
+      </div>
+      <div className={css.navbarWrapper}>
+        <NavbarDesktop links={navbarLinks} className={css.navbarDesktop} />
       </div>
       <Modal
         id="TopbarMobileMenu"
