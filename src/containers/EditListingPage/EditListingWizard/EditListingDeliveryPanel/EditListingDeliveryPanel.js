@@ -27,7 +27,6 @@ const getInitialValues = props => {
   const displayMultipleDelivery = displayShipping && displayPickup;
 
   // Only render current search if full place object is available in the URL params
-  // TODO bounds are missing - those need to be queried directly from Google Places
   const locationFieldsPresent = publicData?.location?.address && geolocation;
   const location = publicData?.location || {};
   const { address, building } = location;
@@ -102,7 +101,6 @@ const getInitialValues = props => {
  */
 const EditListingDeliveryPanel = props => {
   // State is needed since LocationAutocompleteInput doesn't have internal state
-  // and therefore re-rendering would overwrite the values during XHR call.
   const [state, setState] = useState({ initialValues: getInitialValues(props) });
 
   const {
@@ -168,26 +166,30 @@ const EditListingDeliveryPanel = props => {
             const pickupDataMaybe =
               pickupEnabled && address ? { location: { address, building } } : {};
 
-            const myShippingData =
-              shippingEnabled &&
-              shippingResponsibility === 'seller' &&
-              shippingPriceInSubunitsOneItem != null
-                ? {
-                    shippingPriceInSubunitsOneItem: shippingPriceInSubunitsOneItem.amount,
-                    shippingPriceInSubunitsAdditionalItems:
-                      shippingPriceInSubunitsAdditionalItems?.amount,
-                  }
-                : {};
-
-            const clubbyShippingData =
-              shippingEnabled && shippingResponsibility === 'platform'
-                ? {
-                    packageWeight: Number(packageWeight),
-                    packageLength: Number(packageLength),
-                    packageWidth: Number(packageWidth),
-                    packageHeight: Number(packageHeight),
-                  }
-                : {};
+            // Build shipping data and clear opposite fields
+            const shippingData = {};
+            if (shippingEnabled) {
+              if (shippingResponsibility === 'seller') {
+                shippingData.shippingPriceInSubunitsOneItem =
+                  shippingPriceInSubunitsOneItem?.amount ?? null;
+                shippingData.shippingPriceInSubunitsAdditionalItems =
+                  shippingPriceInSubunitsAdditionalItems?.amount ?? null;
+                // clear package dimensions
+                shippingData.packageWeight = null;
+                shippingData.packageLength = null;
+                shippingData.packageWidth = null;
+                shippingData.packageHeight = null;
+              } else if (shippingResponsibility === 'platform') {
+                // clear seller shipping price fields
+                shippingData.shippingPriceInSubunitsOneItem = null;
+                shippingData.shippingPriceInSubunitsAdditionalItems = null;
+                // set package dimensions
+                shippingData.packageWeight = Number(packageWeight);
+                shippingData.packageLength = Number(packageLength);
+                shippingData.packageWidth = Number(packageWidth);
+                shippingData.packageHeight = Number(packageHeight);
+              }
+            }
 
             // New values for listing attributes
             const updateValues = {
@@ -197,31 +199,38 @@ const EditListingDeliveryPanel = props => {
                 ...pickupDataMaybe,
 
                 shippingEnabled,
-                shippingResponsibility, // ← always save who covers
+                shippingResponsibility,
 
-                // fold in whichever shipping-data applies
-                ...myShippingData,
-                ...clubbyShippingData,
+                ...shippingData,
               },
             };
 
-            // Save the initialValues to state
-            // LocationAutocompleteInput doesn't have internal state
-            // and therefore re-rendering would overwrite the values during XHR call.
+            // Save the initialValues to state for reinitialization after submit
             setState({
               initialValues: {
                 building,
                 location: { search: address, selectedPlace: { address, origin } },
-                shippingPriceInSubunitsOneItem,
-                shippingPriceInSubunitsAdditionalItems,
                 deliveryOptions,
-                packageHeight,
-                packageLength,
-                packageWidth,
-                packageWeight,
                 shippingResponsibility,
+                // Reflect cleared/updated shipping data
+                shippingPriceInSubunitsOneItem:
+                  shippingData.shippingPriceInSubunitsOneItem != null
+                    ? new Money(shippingData.shippingPriceInSubunitsOneItem, marketplaceCurrency)
+                    : null,
+                shippingPriceInSubunitsAdditionalItems:
+                  shippingData.shippingPriceInSubunitsAdditionalItems != null
+                    ? new Money(
+                        shippingData.shippingPriceInSubunitsAdditionalItems,
+                        marketplaceCurrency
+                      )
+                    : null,
+                packageWeight: shippingData.packageWeight ?? '',
+                packageLength: shippingData.packageLength ?? '',
+                packageWidth: shippingData.packageWidth ?? '',
+                packageHeight: shippingData.packageHeight ?? '',
               },
             });
+
             onSubmit(updateValues);
           }}
           listingTypeConfig={listingTypeConfig}

@@ -1,0 +1,104 @@
+.root {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.title {
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.loading {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.error {
+  color: #d32f2f;
+  margin: 0;
+  padding: 16px;
+  background-color: #ffebee;
+  border-radius: 4px;
+}
+
+.rates {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rate {
+  display: flex;
+  width: 100%;
+  padding: 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.rate:hover {
+  border-color: #4a90e2;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.rate:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.selectedRate {
+  border-color: #4a90e2;
+  background-color: #f0f7ff;
+}
+
+.rateContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.carrierInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.carrierImage {
+  width: 50px;
+  height: auto;
+  object-fit: contain;
+}
+
+.serviceInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.carrier {
+  font-weight: 600;
+  color: #333;
+}
+
+.service {
+  color: #666;
+  font-size: 14px;
+}
+
+.delivery {
+  color: #666;
+  font-size: 12px;
+}
+
+.price {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+}

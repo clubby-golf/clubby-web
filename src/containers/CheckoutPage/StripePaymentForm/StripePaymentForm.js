@@ -23,6 +23,7 @@ import {
 } from '../../../components';
 
 import ShippingDetails from '../ShippingDetails/ShippingDetails';
+import { ShippingRateSelector } from '../../../components';
 
 import css from './StripePaymentForm.module.css';
 
@@ -449,6 +450,7 @@ class StripePaymentForm extends Component {
 
   paymentForm(formRenderProps) {
     const {
+      listing,
       className,
       rootClassName,
       inProgress: submitInProgress,
@@ -573,6 +575,45 @@ class StripePaymentForm extends Component {
           intl={intl}
         />
 
+        {askShippingDetails &&
+          !loadingData &&
+          (values.recipientAddressLine1 &&
+            values.recipientCity &&
+            values.recipientState &&
+            values.recipientPostal &&
+            values.recipientCountry && (
+              <ShippingRateSelector
+                listing={listing}
+                deliveryAddress={{
+                  firstName: values.recipientName.split(' ')[0] || '',
+                  lastName:
+                    values.recipientName
+                      .split(' ')
+                      .slice(1)
+                      .join(' ') || '',
+                  streetAddress: values.recipientAddressLine1,
+                  city: values.recipientCity,
+                  state: values.recipientState,
+                  postalCode: values.recipientPostal,
+                  country: values.recipientCountry,
+                }}
+                onSelectRate={({ rate, shipmentId, shippingPrice }) => {
+                  formApi.change('shippingPrice', shippingPrice);
+                  formApi.change('shipmentId', shipmentId);
+                }}
+                disabled={submitDisabled}
+              />
+            ))}
+
+        {askShippingDetails && !values.shippingPrice && (
+          <p className={css.error}>
+            <FormattedMessage
+              id="StripePaymentForm.selectShippingRate"
+              defaultMessage="Please choose a shipping option above."
+            />
+          </p>
+        )}
+
         {billingDetailsNeeded && !loadingData ? (
           <React.Fragment>
             {hasDefaultPaymentMethod ? (
@@ -673,7 +714,7 @@ class StripePaymentForm extends Component {
             className={css.submitButton}
             type="submit"
             inProgress={submitInProgress}
-            disabled={submitDisabled}
+            disabled={submitDisabled || (askShippingDetails && !values.shippingPrice)}
           >
             {billingDetailsNeeded ? (
               <FormattedMessage
