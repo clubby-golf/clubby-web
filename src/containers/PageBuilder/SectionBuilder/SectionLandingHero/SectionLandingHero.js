@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import css from './SectionLandingHero.module.css';
 
-const images = ['/images/hero-1.jpg', '/images/hero-2.jpg', '/images/hero-3.jpg'];
+const images = [];
 
 export default function SectionLandingHero() {
   const [currentImage, setCurrentImage] = useState(0);
