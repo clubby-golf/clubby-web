@@ -36,6 +36,11 @@ const getInitialValues = props => {
     pickupEnabled,
     shippingPriceInSubunitsOneItem,
     shippingPriceInSubunitsAdditionalItems,
+    shippingResponsibility,
+    packageWeight,
+    packageLength,
+    packageWidth,
+    packageHeight,
   } = publicData;
   const deliveryOptions = [];
 
@@ -68,6 +73,11 @@ const getInitialValues = props => {
     deliveryOptions,
     shippingPriceInSubunitsOneItem: shippingOneItemAsMoney,
     shippingPriceInSubunitsAdditionalItems: shippingAdditionalItemsAsMoney,
+    shippingResponsibility: shippingResponsibility || 'platform',
+    packageWeight: packageWeight ?? '',
+    packageLength: packageLength ?? '',
+    packageWidth: packageWidth ?? '',
+    packageHeight: packageHeight ?? '',
   };
 };
 
@@ -143,6 +153,11 @@ const EditListingDeliveryPanel = props => {
               shippingPriceInSubunitsOneItem,
               shippingPriceInSubunitsAdditionalItems,
               deliveryOptions,
+              shippingResponsibility,
+              packageWeight,
+              packageLength,
+              packageWidth,
+              packageHeight,
             } = values;
 
             const shippingEnabled = deliveryOptions.includes('shipping');
@@ -153,14 +168,24 @@ const EditListingDeliveryPanel = props => {
             const pickupDataMaybe =
               pickupEnabled && address ? { location: { address, building } } : {};
 
-            const shippingDataMaybe =
-              shippingEnabled && shippingPriceInSubunitsOneItem != null
+            const myShippingData =
+              shippingEnabled &&
+              shippingResponsibility === 'seller' &&
+              shippingPriceInSubunitsOneItem != null
                 ? {
-                    // Note: we only save the "amount" because currency should not differ from listing's price.
-                    // Money is always dealt in subunits (e.g. cents) to avoid float calculations.
                     shippingPriceInSubunitsOneItem: shippingPriceInSubunitsOneItem.amount,
                     shippingPriceInSubunitsAdditionalItems:
                       shippingPriceInSubunitsAdditionalItems?.amount,
+                  }
+                : {};
+
+            const clubbyShippingData =
+              shippingEnabled && shippingResponsibility === 'platform'
+                ? {
+                    packageWeight: Number(packageWeight),
+                    packageLength: Number(packageLength),
+                    packageWidth: Number(packageWidth),
+                    packageHeight: Number(packageHeight),
                   }
                 : {};
 
@@ -170,8 +195,13 @@ const EditListingDeliveryPanel = props => {
               publicData: {
                 pickupEnabled,
                 ...pickupDataMaybe,
+
                 shippingEnabled,
-                ...shippingDataMaybe,
+                shippingResponsibility, // ← always save who covers
+
+                // fold in whichever shipping-data applies
+                ...myShippingData,
+                ...clubbyShippingData,
               },
             };
 
@@ -185,6 +215,11 @@ const EditListingDeliveryPanel = props => {
                 shippingPriceInSubunitsOneItem,
                 shippingPriceInSubunitsAdditionalItems,
                 deliveryOptions,
+                packageHeight,
+                packageLength,
+                packageWidth,
+                packageWeight,
+                shippingResponsibility,
               },
             });
             onSubmit(updateValues);

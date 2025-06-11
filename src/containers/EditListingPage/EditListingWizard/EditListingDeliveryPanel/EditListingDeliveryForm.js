@@ -22,6 +22,7 @@ import {
   FieldCurrencyInput,
   FieldTextInput,
   FieldCheckbox,
+  FieldSelect,
 } from '../../../../components';
 
 // Import modules from this directory
@@ -211,77 +212,149 @@ export const EditListingDeliveryForm = props => (
           />
 
           <div className={shippingClasses}>
-            <FieldCurrencyInput
-              id={
-                formId
-                  ? `${formId}.shippingPriceInSubunitsOneItem`
-                  : 'shippingPriceInSubunitsOneItem'
-              }
-              name="shippingPriceInSubunitsOneItem"
+            {/* Who covers shipping? */}
+            <FieldSelect
               className={css.input}
-              label={intl.formatMessage({
-                id: 'EditListingDeliveryForm.shippingOneItemLabel',
-              })}
+              name="shippingResponsibility"
+              id={`${formId}.shippingResponsibility`}
+              label={intl.formatMessage({ id: 'EditListingDeliveryForm.shippingResponsibility' })}
               placeholder={intl.formatMessage({
-                id: 'EditListingDeliveryForm.shippingOneItemPlaceholder',
+                id: 'EditListingDeliveryForm.shippingResponsibilityPlaceholder',
               })}
-              currencyConfig={currencyConfig}
-              disabled={!shippingEnabled}
               validate={
                 shippingEnabled
                   ? required(
                       intl.formatMessage({
-                        id: 'EditListingDeliveryForm.shippingOneItemRequired',
+                        id: 'EditListingDeliveryForm.shippingResponsibilityRequired',
                       })
                     )
                   : null
               }
-              hideErrorMessage={!shippingEnabled}
-              // Whatever parameters are being used to calculate
-              // the validation function need to be combined in such
-              // a way that, when they change, this key prop
-              // changes, thus reregistering this field (and its
-              // validation function) with Final Form.
-              // See example: https://codesandbox.io/s/changing-field-level-validators-zc8ei
-              key={shippingEnabled ? 'oneItemValidation' : 'noOneItemValidation'}
-            />
+              disabled={!shippingEnabled}
+            >
+              <option value="" disabled>
+                {intl.formatMessage({
+                  id: 'EditListingDeliveryForm.shippingResponsibilityPlaceholder',
+                })}
+              </option>
+              <option value="seller">
+                {intl.formatMessage({ id: 'EditListingDeliveryForm.sellerCovers' })}
+              </option>
+              <option value="platform">
+                {intl.formatMessage({ id: 'EditListingDeliveryForm.platformCovers' })}
+              </option>
+            </FieldSelect>
 
-            {hasStockInUse ? (
-              <FieldCurrencyInput
-                id={
-                  formId
-                    ? `${formId}.shippingPriceInSubunitsAdditionalItems`
-                    : 'shippingPriceInSubunitsAdditionalItems'
-                }
-                name="shippingPriceInSubunitsAdditionalItems"
-                className={css.input}
-                label={intl.formatMessage({
-                  id: 'EditListingDeliveryForm.shippingAdditionalItemsLabel',
-                })}
-                placeholder={intl.formatMessage({
-                  id: 'EditListingDeliveryForm.shippingAdditionalItemsPlaceholder',
-                })}
-                currencyConfig={currencyConfig}
-                disabled={!shippingEnabled}
-                validate={
-                  shippingEnabled
-                    ? required(
-                        intl.formatMessage({
-                          id: 'EditListingDeliveryForm.shippingAdditionalItemsRequired',
-                        })
-                      )
-                    : null
-                }
-                hideErrorMessage={!shippingEnabled}
-                // Whatever parameters are being used to calculate
-                // the validation function need to be combined in such
-                // a way that, when they change, this key prop
-                // changes, thus reregistering this field (and its
-                // validation function) with Final Form.
-                // See example: https://codesandbox.io/s/changing-field-level-validators-zc8ei
-                key={shippingEnabled ? 'additionalItemsValidation' : 'noAdditionalItemsValidation'}
-              />
-            ) : null}
+            {/* If seller covers shipping: show price fields */}
+            {shippingEnabled && values.shippingResponsibility === 'seller' && (
+              <>
+                <FieldCurrencyInput
+                  id={
+                    formId
+                      ? `${formId}.shippingPriceInSubunitsOneItem`
+                      : 'shippingPriceInSubunitsOneItem'
+                  }
+                  name="shippingPriceInSubunitsOneItem"
+                  className={css.input}
+                  label={shippingLabel}
+                  placeholder={intl.formatMessage({
+                    id: 'EditListingDeliveryForm.shippingOneItemPlaceholder',
+                  })}
+                  currencyConfig={currencyConfig}
+                  validate={
+                    shippingEnabled
+                      ? required(
+                          intl.formatMessage({
+                            id: 'EditListingDeliveryForm.shippingOneItemRequired',
+                          })
+                        )
+                      : null
+                  }
+                />
+
+                {hasStockInUse && (
+                  <FieldCurrencyInput
+                    id={
+                      formId
+                        ? `${formId}.shippingPriceInSubunitsAdditionalItems`
+                        : 'shippingPriceInSubunitsAdditionalItems'
+                    }
+                    name="shippingPriceInSubunitsAdditionalItems"
+                    className={css.input}
+                    label={intl.formatMessage({
+                      id: 'EditListingDeliveryForm.shippingAdditionalItemsLabel',
+                    })}
+                    placeholder={intl.formatMessage({
+                      id: 'EditListingDeliveryForm.shippingAdditionalItemsPlaceholder',
+                    })}
+                    currencyConfig={currencyConfig}
+                    validate={
+                      shippingEnabled
+                        ? required(
+                            intl.formatMessage({
+                              id: 'EditListingDeliveryForm.shippingAdditionalItemsRequired',
+                            })
+                          )
+                        : null
+                    }
+                  />
+                )}
+              </>
+            )}
+
+            {/* If Clubby covers shipping: show dimensions */}
+            {shippingEnabled && values.shippingResponsibility === 'platform' && (
+              <>
+                <FieldTextInput
+                  className={css.input}
+                  name="packageWeight"
+                  id={formId ? `${formId}.packageWeight` : 'packageWeight'}
+                  label={intl.formatMessage({ id: 'EditListingDeliveryForm.packageWeight' })}
+                  placeholder={intl.formatMessage({
+                    id: 'EditListingDeliveryForm.packageWeightPlaceholder',
+                  })}
+                  validate={required(
+                    intl.formatMessage({ id: 'EditListingDeliveryForm.packageWeightRequired' })
+                  )}
+                />
+                <FieldTextInput
+                  className={css.input}
+                  name="packageLength"
+                  id={formId ? `${formId}.packageLength` : 'packageLength'}
+                  label={intl.formatMessage({ id: 'EditListingDeliveryForm.packageLength' })}
+                  placeholder={intl.formatMessage({
+                    id: 'EditListingDeliveryForm.packageLengthPlaceholder',
+                  })}
+                  validate={required(
+                    intl.formatMessage({ id: 'EditListingDeliveryForm.packageLengthRequired' })
+                  )}
+                />
+                <FieldTextInput
+                  className={css.input}
+                  name="packageWidth"
+                  id={formId ? `${formId}.packageWidth` : 'packageWidth'}
+                  label={intl.formatMessage({ id: 'EditListingDeliveryForm.packageWidth' })}
+                  placeholder={intl.formatMessage({
+                    id: 'EditListingDeliveryForm.packageWidthPlaceholder',
+                  })}
+                  validate={required(
+                    intl.formatMessage({ id: 'EditListingDeliveryForm.packageWidthRequired' })
+                  )}
+                />
+                <FieldTextInput
+                  className={css.input}
+                  name="packageHeight"
+                  id={formId ? `${formId}.packageHeight` : 'packageHeight'}
+                  label={intl.formatMessage({ id: 'EditListingDeliveryForm.packageHeight' })}
+                  placeholder={intl.formatMessage({
+                    id: 'EditListingDeliveryForm.packageHeightPlaceholder',
+                  })}
+                  validate={required(
+                    intl.formatMessage({ id: 'EditListingDeliveryForm.packageHeightRequired' })
+                  )}
+                />
+              </>
+            )}
           </div>
 
           <Button
